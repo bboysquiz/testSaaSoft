@@ -27,14 +27,36 @@
                 <div class="accounts__label-data">Пароль</div>
                 <div class="accounts__label-data accounts__label-actions"></div>
             </li>
-            <AccountRow class="accounts__row"/>
+            <AccountRow 
+                v-for="acc in store.accounts"
+                :key="acc.id"
+                class="accounts__row"
+                :account="acc"
+                :errors="store.getErrors(acc.id)"
+                @remove="store.removeAccount"
+                @commit="store.commitAccount"
+            />
+
+            <div v-if="!store.accounts.length" class="accounts__empty">
+                Нет учетных записей - нажмите "+", чтобы добавить
+            </div>
         </ul>
     </section>
 </template>
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import AccountRow from './AccountRow.vue';
+import { useAccountsStore } from '@/stores/accounts.store';
 
-function onAdd() {}
+const store = useAccountsStore()
+
+function onAdd() {
+    store.addAccount();
+}
+
+onMounted(() => {
+    store.initFromStorage();
+})
 
 </script>
 <style scoped lang="sass">
